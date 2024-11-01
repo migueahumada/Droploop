@@ -24,6 +24,8 @@
 #endif
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 #include <sndfile.h>
+#include <portaudio.h>
+#include <cstring>
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
@@ -31,6 +33,54 @@
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
+
+static inline float max(float a, float b) {
+    return a > b ? a : b;
+}
+
+
+static int paCallback(const void* inputBuffer, 
+                      void* outputBuffer,
+                      unsigned long framesPerBuffer,
+                      const PaStreamCallbackTimeInfo* timeInfo,
+                      PaStreamCallbackFlags statusFlags, 
+                      void* userData) 
+{
+    float* in = (float*)inputBuffer;
+    (void)outputBuffer;
+
+    int dispSize = 100;
+    printf("\r");
+
+    float vol_l = 0;
+    float vol_r = 0;
+
+    for (unsigned long i = 0; i < framesPerBuffer * 2; i += 2) {
+        vol_l = max(vol_l, std::abs(in[i]));
+        vol_r = max(vol_r, std::abs(in[i + 1]));
+    }
+
+    for (int i = 0; i < dispSize; i++) {
+        float barProportion = i / (float)dispSize;
+        if (barProportion <= vol_l && barProportion <= vol_r) {
+            printf("%c",219);
+        }
+        else if (barProportion <= vol_l) {
+            printf("%c",220);
+        }
+        else if (barProportion <= vol_r) {
+            printf("%c",223);
+        }
+        else {
+            printf(" ");
+        }
+    }
+
+    fflush(stdout);
+
+    return 0;
+
+}
 
 
 static void glfw_error_callback(int error, const char* description)
@@ -97,14 +147,137 @@ int main(int, char**)
 
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    
-
     //------------------------------AudioStuff-------------------------------------
     SF_INFO* psfinfo_in;
     SNDFILE* psf_in;
     SF_FORMAT_INFO	format_info;
     int             k, count;
+    PaError paError;
+    PaStreamParameters inputParameters;
+    PaStreamParameters outputParameters;
+    int device = Pa_GetDefaultInputDevice();
+    double sampleRate = 44100.0;
+    int framesPerBuffer = 512;
+    int inputDevice = 1;
+    int outputDevice = 6;
+
+    paError = Pa_Initialize();
+    if (paError != paNoError)
+    {
+        printf("Portaudio couldn't initialize, please restart the application.\n");
+    }
+
+    const PaDeviceInfo* deviceInfo;
+
+    if (1)
+    {
+        for (int i = 0; i < Pa_GetDeviceCount(); i++)
+        {
+            deviceInfo = Pa_GetDeviceInfo(i);
+            printf("-Device %d\n", i);
+            printf("\t-Name: %s\n", deviceInfo->name);
+            printf("\t-Input channels: %d\n", deviceInfo->maxInputChannels);
+            printf("\t-Output channels: %d\n", deviceInfo->maxOutputChannels);
+            printf("\t-Sample rate: %.2f\n", deviceInfo->defaultSampleRate);
+        }
+    }
     
+    
+    
+
+    //printf("The default input device is: %d\n", Pa_GetDefaultInputDevice());
+    //printf("The default output device is: %d\n", Pa_GetDefaultOutputDevice());
+    
+    deviceInfo = Pa_GetDeviceInfo(inputDevice);
+    if (deviceInfo == NULL)
+    {
+        printf("Error device info is nullptr");
+    }
+    memset(&inputParameters, 0, sizeof(inputParameters));
+    inputParameters.device = inputDevice;
+    inputParameters.channelCount = 2;
+    inputParameters.sampleFormat = paFloat32;
+    inputParameters.hostApiSpecificStreamInfo = NULL;
+    inputParameters.suggestedLatency = deviceInfo->defaultLowInputLatency;
+
+    deviceInfo = Pa_GetDeviceInfo(outputDevice);
+    if (deviceInfo == NULL)
+    {
+        printf("Error device info is nullptr");
+    }
+    memset(&outputParameters, 0, sizeof(outputParameters));
+    outputParameters.device = outputDevice;
+    outputParameters.channelCount = 6;
+    outputParameters.sampleFormat = paFloat32;
+    outputParameters.hostApiSpecificStreamInfo = NULL;
+    outputParameters.suggestedLatency = deviceInfo->defaultLowOutputLatency;
+
+    PaStream* stream;
+
+    paError = Pa_OpenStream(
+        &stream,
+        &inputParameters,
+        &outputParameters,
+        sampleRate,
+        framesPerBuffer,
+        paNoFlag,
+        paCallback,
+        NULL);
+    if (paError != paNoError)
+    {
+        printf("Error while opening a stream. -> %s\n", Pa_GetErrorText(paError));
+        return(EXIT_FAILURE);
+    }
+    if (stream == NULL)
+    {
+        printf("Stream is NULL\n");
+        return(EXIT_FAILURE);
+    }
+
+    paError = Pa_StartStream(stream);
+    if (paError != paNoError)
+    {
+        printf("Error while starting a stream-> %s\n", Pa_GetErrorText(paError));
+        return(EXIT_FAILURE);
+    }
+    
+    
+
+    
+    
+
+    /*
+    paError = Pa_OpenStream(
+        &paStream,
+        &inputParameters,
+        &outputParameters,
+        sampleRate,
+        framesPerBuffer,
+        paNoFlag,
+        paCallback,
+        NULL);
+
+    if (paError != paNoError)
+    {
+        printf("Error while opening a stream. -> %s\n", Pa_GetErrorText(paError));
+    }
+
+    Pa_Sleep(1000);
+
+    paError = Pa_StopStream(&paStream);
+    if (paError != paNoError)
+    {
+        printf("Error while pausing a stream.\n");
+    }
+
+    paError = Pa_CloseStream(&paStream);
+    if (paError != paNoError)
+    {
+        printf("Error while closing a stream.\n");
+    }
+    */
+    
+
 
     psfinfo_in = (SF_INFO*)malloc(sizeof(SF_INFO));
     psf_in = sf_open("D:/Coding/C++/Droploop/assets/Audio_01.wav", SFM_RDWR, psfinfo_in);
@@ -137,6 +310,7 @@ int main(int, char**)
             ImGui_ImplGlfw_Sleep(10);
             continue;
         }
+
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -278,8 +452,21 @@ int main(int, char**)
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
+    //-----------------Audio Cleanup------------
     sf_close(psf_in);
     free(psfinfo_in);
+    paError = Pa_StopStream(stream);
+    if (paError != paNoError)
+    {
+        printf("Error while stopping a stream-> %s\n", Pa_GetErrorText(paError));
+        return(EXIT_FAILURE);
+    }
+    paError = Pa_CloseStream(stream);
+    if (paError != paNoError)
+    {
+        printf("Error while closing a stream.-> %s\n", Pa_GetErrorText(paError));
+    }
+    Pa_Terminate();
     
 
     glfwDestroyWindow(window);
