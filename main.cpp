@@ -116,10 +116,13 @@ int main(int, char**)
     sf_set_string(psf_in, SF_STR_TITLE,"Test Audio");
     printf("%s",sf_get_string(psf_in, SF_STR_TITLE));
 
+    //------------------------------End Audio Stuff-------------------------------------
+
     char buffer[64];
     char buffer2[256];
     memset(buffer2, 0, sizeof(buffer2));
     const char* placeholder;
+    bool show_demo_window=true;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -140,32 +143,66 @@ int main(int, char**)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("Table");
-        ImGui::BeginTable("TABLE",4,ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg,ImVec2(120.4f,50.0f));
-        for (int row = 0; row < 3; row++)
-        {
-            ImGui::TableNextRow(0, 520.0f * 1.5f);
-            for (int column = 0; column < 3; column++)
-            {
-                ImGui::TableNextColumn();
-                ImGui::Text("Cell %d,%d", column, row);
-            }
-        }
-        ImGui::EndTable();
-        
-        ImGui::End();
+        if (show_demo_window)
+            ImGui::ShowDemoWindow(&show_demo_window);
 
-        //Another 
-        // Create a window called "My First Tool", with a menu bar.
-        ImGui::Begin("Audio Information"); 
+        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+        {
+            static float f = 0.0f;
+            static int counter = 0;
+
+            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+
+            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+                counter++;
+            ImGui::SameLine();
+            ImGui::Text("counter = %d", counter);
+
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+            ImGui::End();
+        }
+
+        //Audio Player
+        /*
+            Play Button
+            Pause Button
+            Stop Button
+        */
+        
+        ImGui::Begin("Audio Player");
+        ImGui::SeparatorText("Play a sound!");
+        ImVec2 PlayerButtonSize(120.0f, 50.0f);
+
+        if (ImGui::Button("Play", PlayerButtonSize))
+        {
+            printf("The play button was clicked!");
+            
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Stop", PlayerButtonSize))
+        {
+            printf("The play button was clicked!");
+        }
+        ImGui::SameLine(); //AddSpace
+        if (ImGui::Button("Pause", PlayerButtonSize))
+        {
+            printf("The play button was clicked!");
+        }
+
+        ImGui::SeparatorText("Sound Information");
+
+        
         if (psfinfo_in)
         {
-            
             // Assuming psfinfo_in->samplerate is an integer (e.g., int or unsigned int)
-            
 
-
-            snprintf(buffer, sizeof(buffer), "Title: %s", sf_get_string(psf_in,SF_STR_TITLE));
+            snprintf(buffer, sizeof(buffer), "Title: %s", sf_get_string(psf_in, SF_STR_TITLE));
             ImGui::Text("%s", buffer);
 
             if (ImGui::InputText("Custom Text", buffer2, sizeof(buffer2)))
@@ -179,7 +216,6 @@ int main(int, char**)
                     std::cout << "Title metadata set successfully!\n";
                 }
             }
-            
 
             snprintf(buffer, sizeof(buffer), "Sample Rate: %d", psfinfo_in->samplerate);
             ImGui::Text("%s", buffer);
@@ -198,9 +234,15 @@ int main(int, char**)
 
             snprintf(buffer, sizeof(buffer), "Seekable: %d", psfinfo_in->seekable);
             ImGui::Text("%s", buffer);
-            
-            
+
         }
+
+
+        ImGui::End();
+
+        //Another 
+        // Create a window called "My First Tool", with a menu bar.
+        
 
         
         
@@ -216,7 +258,7 @@ int main(int, char**)
     };*/
         
         
-        ImGui::End();
+        
         
 
         // Rendering
