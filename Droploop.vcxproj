@@ -28,20 +28,13 @@
     <ClCompile Include="libs\imgui\src\imgui_tables.cpp" />
     <ClCompile Include="libs\imgui\src\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\Application.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="libs\glfw\include\GLFW\glfw3.h" />
-    <ClInclude Include="libs\glfw\include\GLFW\glfw3native.h" />
-    <ClInclude Include="libs\imgui\inc\imconfig.h" />
-    <ClInclude Include="libs\imgui\inc\imgui.h" />
-    <ClInclude Include="libs\imgui\inc\imgui_impl_glfw.h" />
-    <ClInclude Include="libs\imgui\inc\imgui_impl_opengl3.h" />
-    <ClInclude Include="libs\imgui\inc\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="libs\imgui\inc\imgui_internal.h" />
-    <ClInclude Include="libs\imgui\inc\imgui_stdlib.h" />
-    <ClInclude Include="libs\imgui\inc\imstb_rectpack.h" />
-    <ClInclude Include="libs\imgui\inc\imstb_textedit.h" />
-    <ClInclude Include="libs\imgui\inc\imstb_truetype.h" />
+    <ClInclude Include="inc\Application.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -101,7 +94,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw\include;$(ProjectDir)libs\imgui\inc;$(ProjectDir)libs\portaudio\include;$(ProjectDir)libs\libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)inc;$(ProjectDir)libs\glfw\include;$(ProjectDir)libs\imgui\inc;$(ProjectDir)libs\portaudio\include;$(ProjectDir)libs\libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -122,7 +115,7 @@ xcopy /y /d "$(SolutionDir)libs\portaudio\bin\x86*.dll" "$(OutDir)"</Command>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw\include;$(ProjectDir)libs\imgui\inc;$(ProjectDir)libs\portaudio\include;$(ProjectDir)libs\libsndfile\include;$(ProjectDir)libs\libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)inc;$(ProjectDir)libs\glfw\include;$(ProjectDir)libs\imgui\inc;$(ProjectDir)libs\portaudio\include;$(ProjectDir)libs\libsndfile\include;$(ProjectDir)libs\libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,7 +136,7 @@ xcopy /y /d "$(SolutionDir)libs\portaudio\bin\x86*.dll" "$(OutDir)"</Command>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw\include;$(ProjectDir)libs\imgui\inc;$(ProjectDir)libs\portaudio\include;$(ProjectDir)libs\libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)inc;$(ProjectDir)libs\glfw\include;$(ProjectDir)libs\imgui\inc;$(ProjectDir)libs\portaudio\include;$(ProjectDir)libs\libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -164,7 +157,7 @@ xcopy /y /d "$(SolutionDir)libs\portaudio\bin\x64*.dll" "$(OutDir)"</Command>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw\include;$(ProjectDir)libs\imgui\inc;$(ProjectDir)libs\portaudio\include;$(ProjectDir)libs\libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)inc;$(ProjectDir)libs\glfw\include;$(ProjectDir)libs\imgui\inc;$(ProjectDir)libs\portaudio\include;$(ProjectDir)libs\libsndfile\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
