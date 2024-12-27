@@ -29,12 +29,18 @@
     <ClCompile Include="libs\imgui\src\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Application.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="inc\Application.h" />
+    <ClCompile Include="src\AudioIO.cpp" />
+    <ClCompile Include="src\AudioLoader.cpp" />
+    <ClCompile Include="src\SoundFile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="inc\Application.h" />
+    <ClInclude Include="inc\AudioIO.h" />
+    <ClInclude Include="inc\AudioLoader.h" />
+    <ClInclude Include="inc\SoundFile.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

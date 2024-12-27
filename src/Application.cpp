@@ -1,8 +1,5 @@
 #include "Application.h"
-
-
-void Application::Run() {
-    
+Application::Application() {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         exit(0);
@@ -30,7 +27,7 @@ void Application::Run() {
 #endif
 
     // Create window with graphics context
-     window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
+    window = glfwCreateWindow(WIN_HEIGHT, WIN_WIDTH, TITLE, nullptr, nullptr);
     if (window == nullptr)
         exit(0);
     glfwMakeContextCurrent(window);
@@ -39,7 +36,7 @@ void Application::Run() {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO& io = ImGui::GetIO(); 
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -53,6 +50,24 @@ void Application::Run() {
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+}
+
+Application::~Application() {
+    // Cleanup
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(window);
+    glfwTerminate();
+}
+
+void Application::Run() {
+
+    audioLoader.load(testSound);
+
+    audioIO.initDeviceInfo();
+    audioIO.play(testSound);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -86,7 +101,7 @@ void Application::Run() {
             ImGui::SameLine();
             ImGui::Text("counter = %d", counter);
 
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             ImGui::End();
         }
 
@@ -100,15 +115,6 @@ void Application::Run() {
 
         glfwSwapBuffers(window);
     }
-
-    // Cleanup
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
-
 
 }
 
