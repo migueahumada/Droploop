@@ -1,4 +1,6 @@
 #include "Application.h"
+#include <stdio.h>
+
 Application::Application() {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
@@ -64,10 +66,9 @@ Application::~Application() {
 
 void Application::Run() {
 
-    audioLoader.load(testSound);
+   
 
-    audioIO.initDeviceInfo();
-    audioIO.play(testSound);
+    
 
     while (!glfwWindowShouldClose(window))
     {
@@ -83,27 +84,64 @@ void Application::Run() {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        if (show_demo_window) ImGui::ShowDemoWindow(&show_demo_window);
-        {
-            static float f = 0.0f;
-            static int counter = 0;
+        //-----------Window for Audio Player-------
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+        ImGui::Begin("Player");
+        ImGui::Text("This is an audio player");
 
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
-
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-            ImGui::End();
+        audioLoader.load(currentSound.get());
+        
+        ImGui::Text(audioLoader.getArtist(currentSound.get()).c_str());
+        ImGui::Text(std::to_string(audioLoader.getLength(currentSound.get())).c_str());
+        
+        std::cout << currentSound.get()->m_Info.frames<< std::endl;
+        
+        if (ImGui::Button("Play")){
+            audioLoader.load(testSound.get());
+            audioIO.play(testSound.get());
         }
+        ImGui::SameLine();
+        if (ImGui::Button("Stop")) {
+            audioLoader.load(testSound.get());
+            audioIO.play(testSound.get());
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Pause")) {
+            audioLoader.load(testSound.get());
+            audioIO.play(testSound.get());
+        }
+
+        bool columnsSelected[NUM_COLUMNS] = {true,false,false,false};
+        
+        if (ImGui::BeginTable("Audio", NUM_COLUMNS, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_SizingFixedSame))
+        {
+
+            ImGui::TableSetupColumn("Category");
+            ImGui::TableSetupColumn("Artist");
+            ImGui::TableSetupColumn("Length (s)");
+            ImGui::TableSetupColumn("Title");
+            ImGui::TableHeadersRow();
+
+            ImGui::TableNextColumn();
+            ImGui::Selectable(audioLoader.getCategory(currentSound.get()).c_str());
+                
+            ImGui::TableNextColumn();
+            ImGui::Selectable(audioLoader.getArtist(currentSound.get()).c_str());
+
+            ImGui::TableNextColumn();
+            ImGui::Selectable(std::to_string(audioLoader.getLength(currentSound.get())).c_str());
+
+            ImGui::TableNextColumn();
+            ImGui::Selectable(audioLoader.getTitle(currentSound.get()).c_str());
+
+            ImGui::EndTable();
+        }
+        ImGui::End();
+
+        //-----------End Window for Audio Player-------
+
+        //Shows the Demo Stuff
+        ImGui::ShowDemoWindow(&show_demo_window);
 
         ImGui::Render();
         int display_w, display_h;
