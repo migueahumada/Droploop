@@ -49,6 +49,9 @@
     <ClCompile Include="src\SoundFile.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\FileLoader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
@@ -64,6 +67,9 @@
       <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="inc\SoundFile.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\FileLoader.h">
       <Filter>inc</Filter>
     </ClInclude>
   </ItemGroup>

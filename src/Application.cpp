@@ -66,9 +66,9 @@ Application::~Application() {
 
 void Application::Run() {
 
-   
+    fileLoader.LoadFilesFromDirectory();
 
-    
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -87,55 +87,53 @@ void Application::Run() {
         //-----------Window for Audio Player-------
 
         ImGui::Begin("Player");
-        ImGui::Text("This is an audio player");
 
-        audioLoader.load(currentSound.get());
-        
-        ImGui::Text(audioLoader.getArtist(currentSound.get()).c_str());
-        ImGui::Text(std::to_string(audioLoader.getLength(currentSound.get())).c_str());
-        
-        std::cout << currentSound.get()->m_Info.frames<< std::endl;
-        
         if (ImGui::Button("Play")){
-            audioLoader.load(testSound.get());
             audioIO.play(testSound.get());
         }
         ImGui::SameLine();
         if (ImGui::Button("Stop")) {
-            audioLoader.load(testSound.get());
-            audioIO.play(testSound.get());
+            audioIO.stop(testSound.get());
+            
         }
         ImGui::SameLine();
         if (ImGui::Button("Pause")) {
-            audioLoader.load(testSound.get());
+            audioIO.stop(testSound.get());
             audioIO.play(testSound.get());
         }
-
-        bool columnsSelected[NUM_COLUMNS] = {true,false,false,false};
         
         if (ImGui::BeginTable("Audio", NUM_COLUMNS, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_SizingFixedSame))
         {
-
-            ImGui::TableSetupColumn("Category");
-            ImGui::TableSetupColumn("Artist");
-            ImGui::TableSetupColumn("Length (s)");
             ImGui::TableSetupColumn("Title");
+            ImGui::TableSetupColumn("Artist");
+            ImGui::TableSetupColumn("Category");
+            ImGui::TableSetupColumn("Length (s)");
+            ImGui::TableSetupColumn("Path");
+
             ImGui::TableHeadersRow();
 
-            ImGui::TableNextColumn();
-            ImGui::Selectable(audioLoader.getCategory(currentSound.get()).c_str());
-                
-            ImGui::TableNextColumn();
-            ImGui::Selectable(audioLoader.getArtist(currentSound.get()).c_str());
+            for (const auto& fileData : fileLoader.m_SoundFiles)
+            {
 
-            ImGui::TableNextColumn();
-            ImGui::Selectable(std::to_string(audioLoader.getLength(currentSound.get())).c_str());
+                ImGui::TableNextColumn();
+                ImGui::Text(audioLoader.getTitle(fileData.get()).c_str());
 
-            ImGui::TableNextColumn();
-            ImGui::Selectable(audioLoader.getTitle(currentSound.get()).c_str());
+                ImGui::TableNextColumn();
+                ImGui::Text(audioLoader.getArtist(fileData.get()).c_str());
 
+                ImGui::TableNextColumn();
+                ImGui::Text(audioLoader.getCategory(fileData.get()).c_str());
+
+                ImGui::TableNextColumn();
+                ImGui::Text(std::to_string(audioLoader.getLength(fileData.get())).c_str());
+
+                ImGui::TableNextColumn();
+                ImGui::Text(fileData.get()->m_Path.c_str());
+
+            }     
             ImGui::EndTable();
         }
+        
         ImGui::End();
 
         //-----------End Window for Audio Player-------

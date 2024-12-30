@@ -16,6 +16,7 @@
 #include "AudioIO.h"
 #include <string>
 #include <vector>
+#include "FileLoader.h"
 
 class Application {
 public:
@@ -35,12 +36,14 @@ public:
 	//Systems
 	AudioLoader audioLoader;
 	AudioIO audioIO;
+	FileLoader fileLoader;
 
-	static const int NUM_COLUMNS = 4;
+	static const int NUM_COLUMNS = 5;
 
 	//Placeholder Audio
 	std::shared_ptr<SoundFile> testSound = std::make_shared<SoundFile>("D:/Coding/C++/Droploop/assets/Audio_02.wav");
-	std::shared_ptr<SoundFile> currentSound = std::make_shared<SoundFile>("D:/Coding/C++/Droploop/assets/Audio_02.wav");
 	
+
+
 
 };

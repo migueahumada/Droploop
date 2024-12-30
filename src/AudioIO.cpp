@@ -87,3 +87,25 @@ void AudioIO::play(SoundFile* soundfile) {
     //std::cout << Pa_GetErrorText(paError) << ": "<< paError;
     
 }
+
+void AudioIO::stop(SoundFile* soundfile) {
+    if (soundfile == nullptr) {
+        std::cout << "Error: soundfile is null!" << std::endl;
+        return;
+    }
+
+    m_SampleRate = static_cast<double>(soundfile->m_Info.samplerate);
+
+    //paError = Pa_OpenDefaultStream(&m_Stream, 0, 2, paFloat32, m_SampleRate, m_FramesPerBuffer, callbackFunction, soundfile);
+    //paError = Pa_OpenStream(&m_Stream, 0, &, paFloat32, m_SampleRate, m_FramesPerBuffer, callbackFunction, soundfile);
+    
+    paError = Pa_StopStream(m_Stream);
+    if (paError != paNoError)
+        std::cout << "Error opening stream: " << Pa_GetErrorText(paError) << std::endl;
+
+    paError = Pa_CloseStream(m_Stream);
+    if (paError != paNoError)
+        std::cout << "Error starting stream: " << Pa_GetErrorText(paError) << std::endl;
+
+    //std::cout << Pa_GetErrorText(paError) << ": "<< paError;
+}

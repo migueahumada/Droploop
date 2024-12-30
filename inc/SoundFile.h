@@ -11,5 +11,5 @@ public:
 	//TODO: Repair error
 	SNDFILE* m_File;
 	SF_INFO m_Info;
-	const char* m_Path;
+	std::string m_Path;
 };

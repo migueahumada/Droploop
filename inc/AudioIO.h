@@ -15,6 +15,7 @@ public:
 						void* userData);
 	void initDeviceInfo();
 	void play(SoundFile* soundfile);
+	void stop(SoundFile* soundfile);
 
 	double m_SampleRate;
 private:
