@@ -17,6 +17,10 @@
 #include <string>
 #include <vector>
 #include "FileLoader.h"
+#include <fftw3.h>
+
+
+
 
 class Application {
 public:
@@ -41,9 +45,7 @@ public:
 	static const int NUM_COLUMNS = 5;
 
 	//Placeholder Audio
-	std::shared_ptr<SoundFile> testSound = std::make_shared<SoundFile>("D:/Coding/C++/Droploop/assets/Audio_02.wav");
-	
-
-
+	std::shared_ptr<SoundFile> testSound = std::make_shared<SoundFile>("D:/Coding/C++/Droploop/assets/Audio_01.wav");
+	std::vector<float> soundSamples;
 
 };

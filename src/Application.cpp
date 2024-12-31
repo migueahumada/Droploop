@@ -52,9 +52,12 @@ Application::Application() {
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+
 }
 
 Application::~Application() {
+    
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -68,6 +71,20 @@ void Application::Run() {
 
     fileLoader.LoadFilesFromDirectory();
 
+    
+
+    std::cout << "Audio:" << testSound.get()->m_Path << std::endl;
+    std::cout << "\tFrames:" << testSound.get()->m_Info.frames << std::endl;
+    std::cout << "\tChannels:" <<testSound.get()->m_Info.channels << std::endl;
+
+    soundSamples.resize(testSound.get()->m_Info.frames);
+
+    std::cout << "The size of the vector is: "<<soundSamples.size() << std::endl;
+    
+    for (size_t i = 0; i < soundSamples.size(); i++)
+    {
+        sf_readf_float(testSound.get()->m_File, &soundSamples[i], 1);
+    }
 
 
     while (!glfwWindowShouldClose(window))
@@ -133,6 +150,8 @@ void Application::Run() {
             }     
             ImGui::EndTable();
         }
+       
+        ImGui::PlotLines("Soundfile", soundSamples.data(), soundSamples.size(),0,"Samples",-1.0f,1.0f,ImVec2(400.0f,150.0f),4);
         
         ImGui::End();
 
