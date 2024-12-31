@@ -10,6 +10,10 @@ public:
 	AudioLoader();
 	~AudioLoader() = default;
 
-	void load(SoundFile* soundfile);
+	//CART INFO CHUNK functions
+	std::string getTitle(SoundFile* soundfile) const;
+	std::string getArtist(SoundFile* soundfile) const;
+	std::string getCategory(SoundFile* soundfile) const;
+	double getLength(SoundFile* soundfile) const;
 private:
 };

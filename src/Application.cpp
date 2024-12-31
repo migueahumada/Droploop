@@ -1,4 +1,6 @@
 #include "Application.h"
+#include <stdio.h>
+
 Application::Application() {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
@@ -50,9 +52,12 @@ Application::Application() {
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+
 }
 
 Application::~Application() {
+    
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -64,10 +69,23 @@ Application::~Application() {
 
 void Application::Run() {
 
-    audioLoader.load(testSound);
+    fileLoader.LoadFilesFromDirectory();
 
-    audioIO.initDeviceInfo();
-    audioIO.play(testSound);
+    
+
+    std::cout << "Audio:" << testSound.get()->m_Path << std::endl;
+    std::cout << "\tFrames:" << testSound.get()->m_Info.frames << std::endl;
+    std::cout << "\tChannels:" <<testSound.get()->m_Info.channels << std::endl;
+
+    soundSamples.resize(testSound.get()->m_Info.frames);
+
+    std::cout << "The size of the vector is: "<<soundSamples.size() << std::endl;
+    
+    for (size_t i = 0; i < soundSamples.size(); i++)
+    {
+        sf_readf_float(testSound.get()->m_File, &soundSamples[i], 1);
+    }
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -83,27 +101,64 @@ void Application::Run() {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        if (show_demo_window) ImGui::ShowDemoWindow(&show_demo_window);
-        {
-            static float f = 0.0f;
-            static int counter = 0;
+        //-----------Window for Audio Player-------
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+        ImGui::Begin("Player");
 
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
-
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-            ImGui::End();
+        if (ImGui::Button("Play")){
+            audioIO.play(testSound.get());
         }
+        ImGui::SameLine();
+        if (ImGui::Button("Stop")) {
+            audioIO.stop(testSound.get());
+            
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Pause")) {
+            audioIO.stop(testSound.get());
+            audioIO.play(testSound.get());
+        }
+        
+        if (ImGui::BeginTable("Audio", NUM_COLUMNS, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_SizingFixedSame))
+        {
+            ImGui::TableSetupColumn("Title");
+            ImGui::TableSetupColumn("Artist");
+            ImGui::TableSetupColumn("Category");
+            ImGui::TableSetupColumn("Length (s)");
+            ImGui::TableSetupColumn("Path");
+
+            ImGui::TableHeadersRow();
+
+            for (const auto& fileData : fileLoader.m_SoundFiles)
+            {
+
+                ImGui::TableNextColumn();
+                ImGui::Text(audioLoader.getTitle(fileData.get()).c_str());
+
+                ImGui::TableNextColumn();
+                ImGui::Text(audioLoader.getArtist(fileData.get()).c_str());
+
+                ImGui::TableNextColumn();
+                ImGui::Text(audioLoader.getCategory(fileData.get()).c_str());
+
+                ImGui::TableNextColumn();
+                ImGui::Text(std::to_string(audioLoader.getLength(fileData.get())).c_str());
+
+                ImGui::TableNextColumn();
+                ImGui::Text(fileData.get()->m_Path.c_str());
+
+            }     
+            ImGui::EndTable();
+        }
+       
+        ImGui::PlotLines("Soundfile", soundSamples.data(), soundSamples.size(),0,"Samples",-1.0f,1.0f,ImVec2(400.0f,150.0f),4);
+        
+        ImGui::End();
+
+        //-----------End Window for Audio Player-------
+
+        //Shows the Demo Stuff
+        ImGui::ShowDemoWindow(&show_demo_window);
 
         ImGui::Render();
         int display_w, display_h;
